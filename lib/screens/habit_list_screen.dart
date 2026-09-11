@@ -36,7 +36,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
   void _generateDates() {
     final now = DateTime.now();
-    _dates = List.generate(5, (index) => now.subtract(Duration(days: index)));
+    _dates = List.generate(30, (index) => now.subtract(Duration(days: index)));
   }
 
   Future<void> _loadData() async {
