@@ -1,0 +1,40 @@
+name: habitloop
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  intl: ^0.18.1
+  fl_chart: ^0.66.0
+  table_calendar: ^3.0.9
+  shared_preferences: ^2.2.0
+  share_plus: ^10.0.2
+  csv: ^6.0.0
+  path_provider: ^2.1.1
+  url_launcher: ^6.3.2
+  http: ^1.2.2
+  package_info_plus: ^8.1.0
+  cryptography: ^2.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#050505"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+
+flutter:
+  uses-material-design: true

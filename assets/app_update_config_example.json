@@ -1,0 +1,9 @@
+{
+  "latest_version": "1.0.1",
+  "force_update": false,
+  "title": "Update available",
+  "message": "New features:\n• Faster habit loading\n• Better notification controls\n• Bug fixes and UI improvements",
+  "download_url": "https://your-domain.com/habitloop-latest.apk",
+  "apk_sha256": "replace_with_64_char_lowercase_sha256",
+  "signature": "replace_with_base64_ed25519_signature_of_canonical_payload"
+}
