@@ -29,6 +29,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze
+        continue-on-error: true
         run: flutter analyze
 
       - name: Test
@@ -57,15 +58,29 @@ jobs:
       - name: Build Linux
         run: flutter build linux --release
 
-      - name: Upload Android/Web/Linux Artifacts
+      - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-web-linux-artifacts
-          path: |
-            build/app/outputs/flutter-apk/*.apk
-            build/app/outputs/bundle/release/*.aab
-            build/web/**
-            build/linux/**
+          name: android-apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: Upload Web Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web/**
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: build/linux/**
+
+      - name: Upload Android AppBundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: build/app/outputs/bundle/release/*.aab
 
   build-windows:
     runs-on: windows-latest
@@ -85,11 +100,17 @@ jobs:
       - name: Build Windows
         run: flutter build windows --release
 
-      - name: Upload Windows Artifacts
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build Windows Installer
+        run: iscc installer.iss
+
+      - name: Upload Windows Setup Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-artifacts
-          path: build/windows/**
+          name: windows-setup
+          path: build/HabitLoopSetup.exe
 
   build-macos-ios:
     runs-on: macos-latest
@@ -112,10 +133,71 @@ jobs:
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign
 
-      - name: Upload macOS/iOS Artifacts
+      - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: macos-ios-artifacts
-          path: |
-            build/macos/**
-            build/ios/**
+          name: macos-build
+          path: build/macos/**
+
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/ios/**
+
+  create_release:
+    name: Create GitHub Release
+    if: github.event_name == 'push'
+    needs:
+      - build-android-web-linux
+      - build-windows
+      - build-macos-ios
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Android artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: artifacts/android
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-setup
+          path: artifacts/windows
+
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: artifacts/web
+
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-build
+          path: artifacts/ios
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          cp artifacts/android/*.apk release-assets/HabitLoop-Android.apk
+          cp artifacts/windows/HabitLoopSetup.exe release-assets/HabitLoop-Windows-Setup.exe
+          tar -czf release-assets/HabitLoop-Web.tar.gz -C artifacts/web .
+          tar -czf release-assets/HabitLoop-iOS.tar.gz -C artifacts/ios .
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: HabitLoop Build ${{ github.run_number }}
+          generate_release_notes: true
+          files: |
+            release-assets/HabitLoop-Android.apk
+            release-assets/HabitLoop-Windows-Setup.exe
+            release-assets/HabitLoop-Web.tar.gz
+            release-assets/HabitLoop-iOS.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/habit.dart';
 import '../data/database_helper.dart';
+import '../services/reminder_service.dart';
 
 class AddHabitScreen extends StatefulWidget {
   final Habit? habit;
@@ -42,6 +44,10 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
       _nameController.text = widget.habit!.name;
       _descriptionController.text = widget.habit!.question;
       _selectedColor = widget.habit!.color;
+      _selectedTime = TimeOfDay(
+        hour: widget.habit!.reminderHour,
+        minute: widget.habit!.reminderMinute,
+      );
     }
   }
 
@@ -598,23 +604,60 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   }
 
   void _saveHabit() async {
-    if (_nameController.text.isEmpty) return;
+    if (_nameController.text.isEmpty) {
+      return;
+    }
 
-    final habit = Habit(
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bool notificationsEnabled =
+        prefs.getBool('notifications_enabled') ?? true;
+    final int defaultHour = prefs.getInt('notification_hour') ?? 8;
+    final int defaultMinute = prefs.getInt('notification_minute') ?? 0;
+
+    final TimeOfDay reminderTime =
+        _selectedTime ?? TimeOfDay(hour: defaultHour, minute: defaultMinute);
+
+    final Habit habit = Habit(
       id: widget.habit?.id,
-      name: _nameController.text,
-      question: _descriptionController.text,
-      type: HabitType.binary, // Forced binary as per request
+      name: _nameController.text.trim(),
+      question: _descriptionController.text.trim(),
+      type: HabitType.binary,
       color: _selectedColor,
       repeatDays: "1,2,3,4,5,6,7",
+      reminderEnabled: notificationsEnabled,
+      reminderHour: reminderTime.hour,
+      reminderMinute: reminderTime.minute,
     );
 
+    int? habitId = widget.habit?.id;
     if (widget.habit == null) {
-      await DatabaseHelper.instance.insertHabit(habit);
+      habitId = await DatabaseHelper.instance.insertHabit(habit);
     } else {
       await DatabaseHelper.instance.updateHabit(habit);
     }
-    if (mounted) Navigator.pop(context, true);
+
+    final Habit scheduledHabit = Habit(
+      id: habitId,
+      name: habit.name,
+      question: habit.question,
+      type: habit.type,
+      frequencyType: habit.frequencyType,
+      frequencyValue: habit.frequencyValue,
+      targetValue: habit.targetValue,
+      unit: habit.unit,
+      color: habit.color,
+      repeatDays: habit.repeatDays,
+      reminderEnabled: habit.reminderEnabled,
+      reminderHour: habit.reminderHour,
+      reminderMinute: habit.reminderMinute,
+      position: habit.position,
+    );
+
+    await ReminderService.instance.scheduleHabit(scheduledHabit);
+
+    if (mounted) {
+      Navigator.pop(context, true);
+    }
   }
 
   void _deleteHabit() async {
@@ -641,8 +684,12 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     );
 
     if (confirm == true) {
-      await DatabaseHelper.instance.deleteHabit(widget.habit!.id!);
-      if (mounted) Navigator.pop(context, true);
+      final int habitId = widget.habit!.id!;
+      await DatabaseHelper.instance.deleteHabit(habitId);
+      await ReminderService.instance.cancelHabitReminders(habitId);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
     }
   }
 }

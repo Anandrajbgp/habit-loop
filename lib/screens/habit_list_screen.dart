@@ -206,6 +206,9 @@ class _HabitListScreenState extends State<HabitListScreen> {
           unit: h.unit,
           color: h.color,
           repeatDays: h.repeatDays,
+          reminderEnabled: h.reminderEnabled,
+          reminderHour: h.reminderHour,
+          reminderMinute: h.reminderMinute,
           position: i,
         ),
       );

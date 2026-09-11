@@ -6,14 +6,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'screens/habit_list_screen.dart';
 import 'services/app_update_service.dart';
+import 'services/reminder_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
+  await ReminderService.instance.init();
+  await ReminderService.instance.rescheduleAllHabits();
 
   runApp(const HabitLoopApp());
 }

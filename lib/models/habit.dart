@@ -12,6 +12,9 @@ class Habit {
   final String? unit; // e.g., "miles", "pages"
   final String color; // Hex string
   final String repeatDays; // e.g., "1,2,3,4,5,6,7" for daily
+  final bool reminderEnabled;
+  final int reminderHour;
+  final int reminderMinute;
   final int position; // For manual reordering
 
   Habit({
@@ -25,6 +28,9 @@ class Habit {
     this.unit,
     required this.color,
     this.repeatDays = "1,2,3,4,5,6,7",
+    this.reminderEnabled = true,
+    this.reminderHour = 8,
+    this.reminderMinute = 0,
     this.position = 0,
   });
 
@@ -40,6 +46,9 @@ class Habit {
       'unit': unit,
       'color': color,
       'repeatDays': repeatDays,
+      'reminderEnabled': reminderEnabled ? 1 : 0,
+      'reminderHour': reminderHour,
+      'reminderMinute': reminderMinute,
       'position': position,
     };
   }
@@ -56,6 +65,9 @@ class Habit {
       unit: map['unit'],
       color: map['color'],
       repeatDays: map['repeatDays'] ?? "1,2,3,4,5,6,7",
+      reminderEnabled: (map['reminderEnabled'] ?? 1) == 1,
+      reminderHour: map['reminderHour'] ?? 8,
+      reminderMinute: map['reminderMinute'] ?? 0,
       position: map['position'] ?? 0,
     );
   }

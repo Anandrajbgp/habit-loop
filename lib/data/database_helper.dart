@@ -20,8 +20,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
@@ -38,6 +39,9 @@ class DatabaseHelper {
         unit TEXT,
         color TEXT NOT NULL,
         repeatDays TEXT NOT NULL DEFAULT '1,2,3,4,5,6,7',
+        reminderEnabled INTEGER NOT NULL DEFAULT 1,
+        reminderHour INTEGER NOT NULL DEFAULT 8,
+        reminderMinute INTEGER NOT NULL DEFAULT 0,
         position INTEGER NOT NULL DEFAULT 0
       )
     ''');
@@ -53,6 +57,20 @@ class DatabaseHelper {
         FOREIGN KEY (habitId) REFERENCES habits (id) ON DELETE CASCADE
       )
     ''');
+  }
+
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+        'ALTER TABLE habits ADD COLUMN reminderEnabled INTEGER NOT NULL DEFAULT 1',
+      );
+      await db.execute(
+        'ALTER TABLE habits ADD COLUMN reminderHour INTEGER NOT NULL DEFAULT 8',
+      );
+      await db.execute(
+        'ALTER TABLE habits ADD COLUMN reminderMinute INTEGER NOT NULL DEFAULT 0',
+      );
+    }
   }
 
   Future<int> insertHabit(Habit habit) async {
