@@ -163,7 +163,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
             SliverToBoxAdapter(child: _buildHeaderRow()),
             SliverReorderableList(
               itemCount: _habits.length,
-              onReorder: _onReorder,
+              onReorderItem: _onReorderItem,
               itemBuilder: (context, index) {
                 final h = _habits[index];
                 return ReorderableDelayedDragStartListener(
@@ -185,8 +185,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
     );
   }
 
-  void _onReorder(int oldIndex, int newIndex) async {
-    if (newIndex > oldIndex) newIndex -= 1;
+  void _onReorderItem(int oldIndex, int newIndex) async {
     setState(() {
       final item = _habits.removeAt(oldIndex);
       _habits.insert(newIndex, item);

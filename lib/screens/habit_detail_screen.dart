@@ -60,10 +60,11 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       );
       if (rec.value == 1.0) {
         streak++;
-      } else if (i == 0)
+      } else if (i == 0) {
         continue;
-      else
+      } else {
         break;
+      }
     }
     return streak;
   }
@@ -250,7 +251,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                   r.date.day == day.day,
               orElse: () => HabitRecord(habitId: 0, date: day, value: 0),
             );
-            if (rec.value == 1.0)
+            if (rec.value == 1.0) {
               return Container(
                 margin: const EdgeInsets.all(6),
                 decoration: BoxDecoration(color: c, shape: BoxShape.circle),
@@ -261,7 +262,8 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                   ),
                 ),
               );
-            if (rec.value == 0.0)
+            }
+            if (rec.value == 0.0) {
               return Container(
                 margin: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -275,6 +277,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                   ),
                 ),
               );
+            }
             return null;
           },
         ),

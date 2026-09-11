@@ -448,17 +448,18 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                       _inYDaysValue = int.tryParse(inDaysController.text) ?? 1;
                       if (localSelected == "Every day") {
                         _selectedFrequency = "Every day";
-                      } else if (localSelected == "Every X days")
+                      } else if (localSelected == "Every X days") {
                         _selectedFrequency = "Every $_everyXDaysValue days";
-                      else if (localSelected == "X times per week")
+                      } else if (localSelected == "X times per week") {
                         _selectedFrequency =
                             "$_timesPerWeekValue times per week";
-                      else if (localSelected == "X times per month")
+                      } else if (localSelected == "X times per month") {
                         _selectedFrequency =
                             "$_timesPerMonthValue times per month";
-                      else if (localSelected == "X times in Y days")
+                      } else if (localSelected == "X times in Y days") {
                         _selectedFrequency =
                             "$_xTimesValue times in $_inYDaysValue days";
+                      }
                     });
                     Navigator.pop(context);
                   },
@@ -492,11 +493,32 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
-            Radio<String>(
-              value: value,
-              groupValue: current,
-              activeColor: const Color(0xFF2196F3),
-              onChanged: (val) => setLocalState(() => onSelect(val!)),
+            GestureDetector(
+              onTap: () => setLocalState(() => onSelect(value)),
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: current == value
+                        ? const Color(0xFF2196F3)
+                        : Colors.white54,
+                    width: 2,
+                  ),
+                ),
+                child: current == value
+                    ? const Center(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF2196F3),
+                            shape: BoxShape.circle,
+                          ),
+                          child: SizedBox(width: 10, height: 10),
+                        ),
+                      )
+                    : null,
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(child: content),

@@ -56,8 +56,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isPrefsReady)
+    if (!_isPrefsReady) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF432C0B);

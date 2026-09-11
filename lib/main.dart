@@ -39,7 +39,7 @@ class _HabitLoopAppState extends State<HabitLoopApp> {
       }
 
       final BuildContext? context = _navigatorKey.currentContext;
-      if (context == null || !mounted) {
+      if (context == null || !context.mounted) {
         return;
       }
 
@@ -64,7 +64,10 @@ class _HabitLoopAppState extends State<HabitLoopApp> {
                     return;
                   }
                   await launchUrl(uri, mode: LaunchMode.platformDefault);
-                  if (!updateInfo.forceUpdate && mounted) {
+                  if (!dialogContext.mounted) {
+                    return;
+                  }
+                  if (!updateInfo.forceUpdate) {
                     Navigator.of(dialogContext).pop();
                   }
                 },
@@ -97,7 +100,6 @@ class _HabitLoopAppState extends State<HabitLoopApp> {
               seedColor: const Color(0xFFB8860B), // Golden Rod
               brightness: Brightness.light,
               surface: const Color(0xFFFFF9E6), // Soft Golden Light
-              background: const Color(0xFFFFFDF5), // Creamy Golden
             ),
             scaffoldBackgroundColor: const Color(0xFFFFFDF5),
             appBarTheme: const AppBarTheme(
@@ -121,7 +123,6 @@ class _HabitLoopAppState extends State<HabitLoopApp> {
               seedColor: const Color(0xFF6200EE),
               brightness: Brightness.dark,
               surface: const Color(0xFF1E1E1E), // Soft Dark Surface
-              background: const Color(0xFF121212), // Not pure black
             ),
             scaffoldBackgroundColor: const Color(0xFF121212),
             appBarTheme: const AppBarTheme(
