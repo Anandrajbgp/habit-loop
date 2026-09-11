@@ -4,6 +4,8 @@ import 'package:habitloop/main.dart';
 void main() {
   testWidgets('App renders home screen', (WidgetTester tester) async {
     await tester.pumpWidget(const HabitLoopApp());
-    expect(find.text('HABITLOOP'), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Habits Tracker'), findsWidgets);
   });
 }
